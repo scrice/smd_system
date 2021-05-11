@@ -1,5 +1,18 @@
-'''
+from mpldatacursor import datacursor
+import matplotlib.pyplot as plt
 import numpy as np
+
+plt.figure()
+plt.subplot(2,1,1)
+line1, = plt.plot(range(10), 'ro-')
+plt.subplot(2,1,2)
+line2, = plt.plot(range(10), 'bo-')
+
+datacursor([line1, line2])
+
+plt.show()
+
+'''
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 # plt.style.use('ggplot')
