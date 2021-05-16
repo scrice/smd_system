@@ -1,6 +1,16 @@
-import numpy as np
-
-def append_systems(sys1,sys2):
-    Abar = np.block([[sys1.A,np.zeros((2,2))], [np.outer(sys2.B,sys1.C), sys2.A]])
-    Bbar = np.concatenate([sys1.B,np.zeros(2)])
-    Cbar = np.concatenate([np.zeros(2),sys2.C])
+def thruster(u,u_prev,off_start_time,fire_start_time,t):
+    if(u>0):
+        if u_prev == 0 and t-off_start_time<0.05:
+            u=0
+        else:
+            u=1
+            if u_prev == 0:
+                fire_start_time = t
+    if(u<=0):
+        if u_prev == 1 and t-fire_start_time<0.05:
+            u = 1
+        else:
+            u = 0
+            if u_prev == 1:
+                off_start_time = t
+    return u,fire_start_time,off_start_time

@@ -15,10 +15,15 @@ class smd_system:
         self.b = b
         self.k = k
 
+        # #x state is [x,xdot]
+        # self.A = np.array([[0,1],[-self.k/self.m,-self.b/self.m]])
+        # self.B = np.array([0,1/self.m])
+        # self.C = np.array([1,0])
+
         #x state is [x,xdot]
-        self.A = np.array([[0,1],[-self.k/self.m,-self.b/self.m]])
-        self.B = np.array([0,1/self.m])
-        self.C = np.array([1,0])
+        self.A = np.array([[-self.b/self.m,-self.k/self.m],[1,0]])
+        self.B = np.array([1/self.m,0])
+        self.C = np.array([0,1])
         
         #sin p state is [p,pdot]
         w0 = 0.25 
@@ -62,4 +67,4 @@ class smd_system:
 mysmd = smd_system(m=1,b=2,k=3)
 # mysmd.simulate(np.array([0,0,0,0,0]),0,50,lambda x:5)
 # %%
-mysmd.simulate(np.array([0,0,0,0]),0,50,lambda x:0.1*np.sin(0.25*x))
+mysmd.simulate(np.array([0,0,2,0]),0,50,lambda x:0.1*np.sin(0.25*x))
