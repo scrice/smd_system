@@ -1,9 +1,12 @@
+#For thruster problem see Sidi(1997) and Wie(2008)
+
 #%%
 import numpy as np
+from numpy.core.fromnumeric import size
+from scipy import linalg
 from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Cursor
-from control import lqr
 import mplcursors
 
 class smd_system:
@@ -26,13 +29,24 @@ class smd_system:
         # double integrator
         # self.Ac = np.array([[0,1],[0,0]])
         # self.Bc = np.array([0,1])
-    
-        self.Abar = np.block([[self.Ac,np.zeros((2,2))], [np.outer(self.B,self.Cc), self.A]])
-        self.Bbar = np.concatenate([self.Bc,np.zeros(2)])
-        self.Cbar = np.concatenate([np.zeros(2),self.C])
+        # self.Cc = np.array([0,1])
 
-    def plant(self,t,p,e):
-        return self.A@p+self.B*e
+        #PID
+        # self.kp=1
+        # self.kd=2
+        # self.ki=3
+        # self.Ac = np.array([[0,0,0],[1,0,0],[0,0,0]])
+        # self.Bc = np.array([0,0,1])
+        # self.Cc = np.array([self.kd,self.kp,self.ki])
+
+        Arows,Acols = np.shape(self.A) 
+        Acrows,Accols = np.shape(self.Ac) 
+        self.Abar = np.block([[self.Ac,np.zeros((Acrows,Acols))], [np.outer(self.B,self.Cc), self.A]])
+        self.Bbar = np.concatenate([self.Bc,np.zeros(np.size(self.B))])
+        self.Cbar = np.concatenate([np.zeros(np.size(self.Cc)),self.C])
+
+    def plant(self,t,p,u):
+        return self.A@p+self.B*u
     
     def closedLoop(self,t,x,reference):
         return (self.Abar-np.outer(self.Bbar,self.Cbar))@x+self.Bbar*reference(t)
@@ -59,6 +73,11 @@ class smd_system:
 
 #%%
 mysmd = smd_system(m=1,b=2,k=3)
-# mysmd.simulate(np.array([5,5,0,0]),0,30,lambda x:10)
+# mysmd.simulate(np.array([0,0,0,0,0]),0,50,lambda x:5)
 # %%
 mysmd.simulate(np.array([0,0,3,3]),0,50,lambda x:0.1*np.sin(0.25*x))
+
+# print(linalg.eig(mysmd.Abar))
+print(linalg.eig(mysmd.Abar-np.outer(mysmd.Bbar,mysmd.Cbar)))
+
+hold =1
