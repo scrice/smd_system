@@ -13,7 +13,7 @@ class smd_system:
         self.b = b
         self.k = k
 
-        #state space matrices, x state is [x,xdot]
+        #state space matrices, x state is [xdot,x]
         self.A = np.array([[-self.b/self.m,-self.k/self.m],[1,0]])
         self.B = np.array([[1/self.m],[0]])
         self.C = np.array([[0,1]])
@@ -58,6 +58,6 @@ class smd_system:
 
 #%%
 mysmd = smd_system(m=1,b=2,k=3)
-# mysmd.simulate(np.array([0,0,0]),0,10,lambda x:5)
+mysmd.simulate(np.array([0,0,0]),0,10,lambda x:5)
 # %%
-mysmd.simulate(np.array([0,0,0]),0,50,lambda x:0.1*np.sin(0.25*x))
+# mysmd.simulate(np.array([0,0,0]),0,50,lambda x:0.1*np.sin(0.25*x))

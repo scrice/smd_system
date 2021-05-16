@@ -10,47 +10,50 @@ from matplotlib.widgets import Cursor
 import mplcursors
 
 class smd_system:
-    def __init__(self,m,b,k):
+    def __init__(self,m,b,k,mode,w=0):
         self.m = m
         self.b = b
         self.k = k
 
-        # #x state is [x,xdot]
-        # self.A = np.array([[0,1],[-self.k/self.m,-self.b/self.m]])
-        # self.B = np.array([0,1/self.m])
-        # self.C = np.array([1,0])
-
         #x state is [x,xdot]
-        self.A = np.array([[-self.b/self.m,-self.k/self.m],[1,0]])
-        self.B = np.array([1/self.m,0])
-        self.C = np.array([0,1])
+        self.A = np.array([[0,1],[-self.k/self.m,-self.b/self.m]])
+        self.B = np.array([[0,1/self.m]]).T
+        self.C = np.array([[1,0]])
         
-        #sin p state is [p,pdot]
-        w0 = 0.25 
-        self.Ac = np.array([[0,1],[-w0**2,0]])
-        self.Bc = np.array([0,1])
-        self.Cc = np.array([0,1])
+        if mode == 1:
+            #single integrator
+            self.Ac = np.array([[0]])
+            self.Bc = np.array([[1]])
+            self.Cc = np.array([[1]])
+            self.K = np.array([[-41.6238,-7.8614,100.0000]]) #LQR magic
 
-        Arows,Acols = np.shape(self.A) 
-        Acrows,Accols = np.shape(self.Ac) 
-        self.Abar = np.block([[self.Ac,np.zeros((Acrows,Acols))], [np.outer(self.B,self.Cc), self.A]])
-        self.Bbar = np.concatenate([self.Bc,np.zeros(np.size(self.B))])
-        self.Cbar = np.concatenate([np.zeros(np.size(self.Cc)),self.C])
+        if mode == 2:
+            #sin p state is [p,pdot]
+            w0 = 0.25 
+            self.Ac = np.array([[0,1],[-w0**2,0]])
+            self.Bc = np.array([[0,1]]).T
+            self.Cc = np.array([0,1])
+            self.K = np.array([[-1.1072,-0.4949,0.2479,4.0020]]) #LQR magic
 
-    def plant(self,t,p,u):
-        return self.A@p+self.B*u
-    
+        #Reference free closed loop system
+        Abar = np.block([[self.A,np.zeros((np.shape(self.A)[0],np.shape(self.Ac)[1]))],[-self.Bc*self.C,self.Ac]])
+        Bbar = np.block([[self.B],[np.zeros((np.shape(self.Ac)[0],1))]])
+        #LQR magic would happen here
+
+        #Closed loop system state space
+        self.Acl = Abar+Bbar*self.K
+        self.Bcl = np.block([[np.zeros(np.shape(self.B))],[self.Bc]])
+        self.Ccl = np.block([self.C,np.zeros(np.shape(self.Cc))])
+
     def closedLoop(self,t,x,reference):
-        return (self.Abar-np.outer(self.Bbar,self.Cbar))@x+self.Bbar*reference(t)
-
+        return self.Acl@x+self.Bcl.flatten()*reference(t)
+    
     def simulate(self,x0,t0,tf,reference):
         sol = solve_ivp(self.closedLoop,[t0,tf],x0,args=([reference]), dense_output=True)
         t = np.linspace(t0, tf, 100)
         z = sol.sol(t)
-        y = self.Cbar@z
-        sol_plot = plt.plot(t,y)
-        # vel_plot = plt.plot(t,z[3])
-        # pos_plot = plt.plot(t,z[2])
+        y = self.Ccl@z
+        sol_plot = plt.plot(t,y.flatten())
         output = reference(t)
         if np.isscalar(output):
             ref_plot = plt.plot(t,[reference(t)]*len(t))
@@ -64,7 +67,9 @@ class smd_system:
         plt.show()
 
 #%%
-mysmd = smd_system(m=1,b=2,k=3)
-# mysmd.simulate(np.array([0,0,0,0,0]),0,50,lambda x:5)
+const_ref_smd = smd_system(m=1,b=2,k=3,mode=1)
+const_ref_smd.simulate(np.array([0,0,0]),0,10,lambda x:5)
 # %%
-mysmd.simulate(np.array([0,0,2,0]),0,50,lambda x:0.1*np.sin(0.25*x))
+wref = 0.25
+sin_ref_smd = smd_system(m=1,b=2,k=3,mode=2,w=wref)
+sin_ref_smd.simulate(np.array([0,0,0,0]),0,50,lambda x:0.1*np.sin(wref*x))
