@@ -12,11 +12,9 @@ C = np.array([1,0])
 T = 20
 dt = 0.001
 
-track = 3
+track = 2
 if track == 1:
-    kp=1
-    kd=2
-    ki=3
+    kp,kd,ki=4,3,3
     actuator_model = 0
     r = lambda t:3
 
@@ -25,12 +23,12 @@ if track == 2:
     kd=2
     ki=15
     actuator_model = 0
+    T = 100
+    dt = .01
     r = lambda t:0.1*np.sin(.25*t)
 
 if track == 3:
-    kp = 3
-    kd = 2
-    ki = .25 
+    kp,kd,ki = 3,2,.25
     r = lambda t:.25
     actuator_model = 1
 
@@ -77,18 +75,8 @@ for t in t_span.tolist():
     all_x=np.vstack((all_x,x))
     u_stack.append(u)
 
-# plt.plot(t_span,all_x[:][:-1])
-# output = r(t_span)
-# if np.isscalar(output):
-#     ref_plot = plt.plot(t_span,[r(t_span)]*len(t_span))
-# else:
-#     ref_plot = plt.plot(t_span,r(t_span))
-# # plt.plot(t_span,u_stack)
-# plt.legend(["x(t)","x'(t)","r(t)"])
-# plt.show()
-
 fig, axs = plt.subplots(2)
-fig.suptitle('Two Responses')
+axs[0].set_title('Response')
 axs[0].plot(t_span,all_x[:][:-1])
 output = r(t_span)
 if np.isscalar(output):
@@ -96,5 +84,6 @@ if np.isscalar(output):
 else:
     ref_plot = axs[0].plot(t_span,r(t_span))
 axs[0].legend(["x(t)","x'(t)","r(t)"])
+axs[1].set_title('Input')
 axs[1].plot(t_span,u_stack)
 plt.show()

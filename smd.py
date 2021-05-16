@@ -26,19 +26,6 @@ class smd_system:
         self.Bc = np.array([0,1])
         self.Cc = np.array([0,1])
 
-        # double integrator
-        # self.Ac = np.array([[0,1],[0,0]])
-        # self.Bc = np.array([0,1])
-        # self.Cc = np.array([0,1])
-
-        #PID
-        # self.kp=1
-        # self.kd=2
-        # self.ki=3
-        # self.Ac = np.array([[0,0,0],[1,0,0],[0,0,0]])
-        # self.Bc = np.array([0,0,1])
-        # self.Cc = np.array([self.kd,self.kp,self.ki])
-
         Arows,Acols = np.shape(self.A) 
         Acrows,Accols = np.shape(self.Ac) 
         self.Abar = np.block([[self.Ac,np.zeros((Acrows,Acols))], [np.outer(self.B,self.Cc), self.A]])
@@ -66,7 +53,7 @@ class smd_system:
             ref_plot = plt.plot(t,reference(t))
         plt.xlabel('t')
         plt.ylabel('magnitude')
-        plt.legend(["x'(t)", "x(t)", "r(t)"], shadow=True)
+        plt.legend(["x'(t)", "r(t)"], shadow=True)
         plt.title('simulation')
         # mplcursors.cursor(sol_plot)
         plt.show()
@@ -75,9 +62,4 @@ class smd_system:
 mysmd = smd_system(m=1,b=2,k=3)
 # mysmd.simulate(np.array([0,0,0,0,0]),0,50,lambda x:5)
 # %%
-mysmd.simulate(np.array([0,0,3,3]),0,50,lambda x:0.1*np.sin(0.25*x))
-
-# print(linalg.eig(mysmd.Abar))
-print(linalg.eig(mysmd.Abar-np.outer(mysmd.Bbar,mysmd.Cbar)))
-
-hold =1
+mysmd.simulate(np.array([0,0,0,0]),0,50,lambda x:0.1*np.sin(0.25*x))
