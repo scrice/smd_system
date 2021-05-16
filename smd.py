@@ -59,16 +59,16 @@ class smd_system:
             ref_plot = plt.plot(t,[reference(t)]*len(t))
         else:
             ref_plot = plt.plot(t,reference(t))
-        plt.xlabel('t')
-        plt.ylabel('magnitude')
-        plt.legend(["x'(t)", "r(t)"], shadow=True)
+        plt.xlabel('time(s)')
+        plt.ylabel('distance(m)')
+        plt.legend(["x(t)", "r(t)"], shadow=True)
         plt.title('simulation')
         # mplcursors.cursor(sol_plot)
         plt.show()
 
 #%%
 const_ref_smd = smd_system(m=1,b=2,k=3,mode=1)
-const_ref_smd.simulate(np.array([0,0,0]),0,10,lambda x:5)
+const_ref_smd.simulate(np.array([0,0,0]),0,5,lambda x:5)
 # %%
 wref = 0.25
 sin_ref_smd = smd_system(m=1,b=2,k=3,mode=2,w=wref)

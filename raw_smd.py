@@ -13,23 +13,21 @@ C = np.array([1,0])
 T = 5 
 dt = 0.001
 
-case = 3
+case = 1
 if case == 1:
     kp,kd,ki=4,3,3
     actuator_model = 0
     r = lambda t:5
-
 if case == 2:
+    kp,kd,ki = 3,2,.25
+    r = lambda t:.25
+    actuator_model = 1
+if case == 3:
     kp,kd,ki=1,2,15
     actuator_model = 0
     T = 100
     dt = .01
     r = lambda t:0.1*np.sin(.25*t)
-
-if case == 3:
-    kp,kd,ki = 3,2,.25
-    r = lambda t:.25
-    actuator_model = 1
 
 x = np.array([0,0])
 off_start_time,fire_start_time = -1,-1
