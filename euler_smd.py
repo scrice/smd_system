@@ -13,7 +13,7 @@ C = np.array([1,0])
 T = 5 
 dt = 0.001
 
-case = 1
+case = 2
 if case == 1:
     kp,kd,ki=4,3,3
     actuator_model = 0
@@ -64,6 +64,8 @@ for t in t_span.tolist():
 
 fig, axs = plt.subplots(2)
 axs[0].set_title('Response')
+axs[0].set_xlabel('Time (s)')
+axs[0].set_ylabel('Distance (m)')
 axs[0].plot(t_span,all_x[:][:-1])
 output = r(t_span)
 if np.isscalar(output):
@@ -72,5 +74,7 @@ else:
     ref_plot = axs[0].plot(t_span,r(t_span))
 axs[0].legend(["x(t)","x'(t)","r(t)"])
 axs[1].set_title('Input')
+axs[1].set_xlabel('Time (s)')
+axs[1].set_ylabel('Input (N)')
 axs[1].plot(t_span,u_stack)
 plt.show()

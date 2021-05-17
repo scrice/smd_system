@@ -1,5 +1,3 @@
-#For thruster problem see Sidi(1997) and Wie(2008)
-
 #%%
 import numpy as np
 from numpy.core.fromnumeric import size
